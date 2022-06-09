@@ -16,12 +16,15 @@ function Popular() {
         const check = localStorage.getItem('popular');
 
         if(check){
+            //devemos converter a string para array para poder setar no state
             setPopular(JSON.parse(check))
+        }else{            
+            const api = await fetch(`https://api.spoonacular.com/recipes/random?apiKey=${process.env.REACT_APP_API_KEY}&number=9`);
+            const data = await api.json();
+            //local storage só aceita string por esse motivo passamos o array pra string
+            localStorage.setItem('popular', JSON.stringify(data.recipes));
+            setPopular(data.recipes)
         }
-
-        const api = await fetch(`https://api.spoonacular.com/recipes/random?apiKey=${process.env.REACT_APP_API_KEY}&number=9`);
-        const data = await api.json();
-        setPopular(data.recipes)
     }
 
     return (
@@ -37,8 +40,8 @@ function Popular() {
             }}>
                 {popular.map((recipe) => {
                     return (
-                        <SplideSlide>
-                            <Card key={recipe.id}>
+                        <SplideSlide key={recipe.id}>
+                            <Card>
                                 <p>{recipe.title}</p>
                                 <img src={recipe.image} alt={recipe.title}></img>
                                 <Gradient></Gradient>
